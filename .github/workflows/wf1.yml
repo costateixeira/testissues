@@ -24,18 +24,19 @@ jobs:
             --url https://api.github.com/graphql \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
             --header "Content-Type: application/json" \
-            --data '{"query":"query { repository(owner: \"${REPO_OWNER}\", name: \"${REPO_NAME}\") { projectV2(number: ${PROJECT_NUMBER}) { id, view(number: ${VIEW_NUMBER}) { fields(first: 10) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }"}' \
+            --data '{"query":"query { repository(owner: \"'"${REPO_OWNER}"'\", name: \"'"${REPO_NAME}"'\") { projectV2(number: '"${PROJECT_NUMBER}"') { id, view(number: '"${VIEW_NUMBER}"') { fields(first: 10) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }"}' \
             --silent)
-
+          
           echo "Fetched Data:"
           echo "$DATA" | jq
-
+          
           COLUMN_ID=$(echo "$DATA" | jq -r '.data.repository.projectV2.view.fields.nodes[] | select(.options[].name == "Inbox").options[] | select(.name == "Inbox") | .id')
-
+          
           PROJECT_ID=$(echo "$DATA" | jq -r '.data.repository.projectV2.id')
-
+          
           echo "Project ID: $PROJECT_ID"
           echo "Inbox Column ID: $COLUMN_ID"
+          
 
       - name: Install jq
         run: sudo apt install -y jq
