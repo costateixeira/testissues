@@ -18,15 +18,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          QUERY="query { repository(owner: "costateixeira", name: "testissues") { projectsNext(first: 10) { nodes { id, number, title } } } }"
+          QUERY='query { repository(owner: "costateixeira", name: "testissues") { projectsNext(first: 10) { nodes { id, number, title } } } }'
           RESPONSE=$(curl --request POST \
             --url https://api.github.com/graphql \
-            --header 'Authorization: Bearer ${{ env.GITHUB_TOKEN }}' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
             --header 'Content-Type: application/json' \
-            --data "{\\"query\\":\\"$QUERY\\"}" \
+            --data "{\"query\":\"$QUERY\"}" \
             --silent)
+          
           echo "Query Response:"
           echo $RESPONSE | jq
+
 
       - name: Install jq
         run: sudo apt-get install jq
