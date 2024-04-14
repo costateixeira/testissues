@@ -1,38 +1,41 @@
-name: Fetch GitHub Projects Information
+name: Fetch Project Column ID
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
 
 jobs:
-  fetch_projects:
+  fetch-and-filter-project-details:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: read
+
+    env:
+      REPO_OWNER: ${{ secrets.REPO_OWNER }}
+      REPO_NAME: ${{ secrets.REPO_NAME }}
+      PROJECT_NUMBER: ${{ secrets.PROJECT_NUMBER }}
+      VIEW_NUMBER: ${{ secrets.VIEW_NUMBER }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Fetch Projects
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fetch project data and filter for Inbox column ID
         run: |
-          QUERY='query { repository(owner: "costateixeira", name: "testissues") { projectsNext(first: 10) { nodes { id, number, title } } } }'
-          RESPONSE=$(curl --request POST \
+          DATA=$(curl --request POST \
             --url https://api.github.com/graphql \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
-            --header 'Content-Type: application/json' \
-            --data "{ \"query\": \"$QUERY\" }" \
+            --header "Content-Type: application/json" \
+            --data '{"query":"query { repository(owner: \"${REPO_OWNER}\", name: \"${REPO_NAME}\") { projectV2(number: ${PROJECT_NUMBER}) { id, view(number: ${VIEW_NUMBER}) { fields(first: 10) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }"}' \
             --silent)
-          
-          echo "Query Response:"
-          echo $RESPONSE | jq
-          
-          echo "Query Response:"
-          echo $RESPONSE | jq
 
+          echo "Fetched Data:"
+          echo "$DATA" | jq
+
+          COLUMN_ID=$(echo "$DATA" | jq -r '.data.repository.projectV2.view.fields.nodes[] | select(.options[].name == "Inbox").options[] | select(.name == "Inbox") | .id')
+
+          PROJECT_ID=$(echo "$DATA" | jq -r '.data.repository.projectV2.id')
+
+          echo "Project ID: $PROJECT_ID"
+          echo "Inbox Column ID: $COLUMN_ID"
 
       - name: Install jq
-        run: sudo apt-get install jq
-
+        run: sudo apt install -y jq
