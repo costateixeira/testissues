@@ -21,11 +21,11 @@ jobs:
       - name: Fetch project data and filter for Inbox column ID
         run: |
           DATA=$(curl --request POST \
-            --url https://api.github.com/graphql \
-            --header "Authorization: Bearer $GITHUB_TOKEN" \
-            --header "Content-Type: application/json" \
-            --data '{"query":"query { repository(owner: \"'"${REPO_OWNER}"'\", name: \"'"${REPO_NAME}"'\") { projectV2(number: '"${PROJECT_NUMBER}"') { id, view(number: '"${VIEW_NUMBER}"') { fields(first: 10) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }"}' \
-            --silent)
+              --url https://api.github.com/graphql \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header "Content-Type: application/json" \
+              --data "{\"query\":\"query { repository(owner: \\\"${REPO_OWNER}\\\", name: \\\"${REPO_NAME}\\\") { projectV2(number: ${PROJECT_NUMBER}) { id, view(number: ${VIEW_NUMBER}) { fields(first: 10) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }\"}" \
+              --silent)
           
           echo "Fetched Data:"
           echo "$DATA" | jq
@@ -36,6 +36,7 @@ jobs:
           
           echo "Project ID: $PROJECT_ID"
           echo "Inbox Column ID: $COLUMN_ID"
+
           
 
       - name: Install jq
