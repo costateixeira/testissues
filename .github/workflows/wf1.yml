@@ -23,8 +23,11 @@ jobs:
             --url https://api.github.com/graphql \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
             --header 'Content-Type: application/json' \
-            --data "{\"query\":\"$QUERY\"}" \
+            --data "{ \"query\": \"$QUERY\" }" \
             --silent)
+          
+          echo "Query Response:"
+          echo $RESPONSE | jq
           
           echo "Query Response:"
           echo $RESPONSE | jq
