@@ -1,0 +1,33 @@
+name: Fetch GitHub Projects Information
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch_projects:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch Projects
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          QUERY="query { repository(owner: \\"your_org_or_user_name\\", name: \\"your_repository_name\\") { projectsNext(first: 10) { nodes { id, number, title } } } }"
+          RESPONSE=$(curl --request POST \
+            --url https://api.github.com/graphql \
+            --header 'Authorization: Bearer ${{ env.GITHUB_TOKEN }}' \
+            --header 'Content-Type: application/json' \
+            --data "{\\"query\\":\\"$QUERY\\"}" \
+            --silent)
+          echo "Query Response:"
+          echo $RESPONSE | jq
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
