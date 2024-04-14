@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REPO_OWNER: ${{ secrets.REPO_OWNER }}
-      REPO_NAME: ${{ secrets.REPO_NAME }}
+      REPO_OWNER: ${{ github.repository_owner }}
+      REPO_NAME: ${{ github.event.repository.name }}
       PROJECT_NUMBER: 14
       VIEW_NUMBER: 1
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
