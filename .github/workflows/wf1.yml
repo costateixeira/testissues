@@ -10,8 +10,8 @@ jobs:
     env:
       REPO_OWNER: ${{ secrets.REPO_OWNER }}
       REPO_NAME: ${{ secrets.REPO_NAME }}
-      PROJECT_NUMBER: ${{ secrets.PROJECT_NUMBER }}
-      VIEW_NUMBER: ${{ secrets.VIEW_NUMBER }}
+      PROJECT_NUMBER: 14
+      VIEW_NUMBER: 1
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
