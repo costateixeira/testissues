@@ -18,7 +18,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          QUERY="query { repository(owner: \\"your_org_or_user_name\\", name: \\"your_repository_name\\") { projectsNext(first: 10) { nodes { id, number, title } } } }"
+          QUERY="query { repository(owner: \\"costateixeira\\", name: \\"testissues\\") { projectsNext(first: 10) { nodes { id, number, title } } } }"
           RESPONSE=$(curl --request POST \
             --url https://api.github.com/graphql \
             --header 'Authorization: Bearer ${{ env.GITHUB_TOKEN }}' \
