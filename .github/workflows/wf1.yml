@@ -24,18 +24,22 @@ jobs:
             --url https://api.github.com/graphql \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
             --header "Content-Type: application/json" \
-            --data "{\"query\":\"query { repository(owner: \\\"costateixeira\\\", name: \\\"testissues\\\") { id, name, projectV2(number: 14) { id, title, view(number: 1) { id, name, fields(first: 5) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }\"}" \
+            --data "{\"query\":\"query { user(login: \\\"costateixeira\\\") { projectV2(number: 14) { id, title, view(number: 1) { id, name, fields(first: 5) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }\"}" \
             --silent)
           
           echo "Fetched Data:"
           echo "$DATA" | jq
           
-          COLUMN_ID=$(echo "$DATA" | jq -r '.data.repository.projectV2.view.fields.nodes[] | select(.options[].name == "Inbox").options[] | select(.name == "Inbox") | .id')
+          if [[ $(echo "$DATA" | jq -r '.data.user.projectV2') != "null" ]]; then
+              COLUMN_ID=$(echo "$DATA" | jq -r '.data.user.projectV2.view.fields.nodes[] | select(.options[].name == "Inbox").options[] | select(.name == "Inbox") | .id')
+              PROJECT_ID=$(echo "$DATA" | jq -r '.data.user.projectV2.id')
+              echo "Project ID: $PROJECT_ID"
+              echo "Inbox Column ID: $COLUMN_ID"
+          else
+              echo "Error: Could not resolve to a ProjectV2 with the number 14."
+              echo $(echo "$DATA" | jq -r '.errors[].message')
+          fi
           
-          PROJECT_ID=$(echo "$DATA" | jq -r '.data.repository.projectV2.id')
-          
-          echo "Project ID: $PROJECT_ID"
-          echo "Inbox Column ID: $COLUMN_ID"
 
           
 
