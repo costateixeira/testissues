@@ -21,11 +21,11 @@ jobs:
       - name: Fetch project data and filter for Inbox column ID
         run: |
           DATA=$(curl --request POST \
-              --url https://api.github.com/graphql \
-              --header "Authorization: Bearer $GITHUB_TOKEN" \
-              --header "Content-Type: application/json" \
-              --data "{\"query\":\"query { repository(owner: \\\"costateixeira\\\", name: \\\"testissues\\\") { projectV2(number: 14) { id, view(number: 1) { fields(first: 10) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }\"}" \
-              --silent)
+            --url https://api.github.com/graphql \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "{\"query\":\"query { repository(owner: \\\"costateixeira\\\", name: \\\"testissues\\\") { id, name, projectV2(number: 14) { id, title, view(number: 1) { id, name, fields(first: 5) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }\"}" \
+            --silent)
           
           echo "Fetched Data:"
           echo "$DATA" | jq
