@@ -26,7 +26,7 @@ jobs:
             --url https://api.github.com/graphql \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
             --header "Content-Type: application/json" \
-            --data "{\"query\":\"query { user(login: \\\"costateixeira\\\") { projectV2(number: 14) { id } } }\"}" \
+            --data "{\"query\":\"query { user(login: \\\"costateixeira\\\") { projectV2(number: 14) { id, title, view(number: 1) { id, name, fields(first: 5) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }\"}" \
             --silent -v
           
           echo "Fetched Data:"
