@@ -18,8 +18,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install jq
+        run: sudo apt install -y jq
+
       - name: Fetch project data and filter for Inbox column ID
         run: |
+          echo {"query":"query { user(login: \"costateixeira\") { projectV2(number: 14) { id, title, view(number: 1) { id, name, fields(first: 5) { nodes { ... on ProjectV2SingleSelectField { name, options { id, name } } } } } } } }"}"
           DATA=$(curl -v --request POST \
             --url https://api.github.com/graphql \
             --header "Authorization: Bearer $GITHUB_TOKEN" \
@@ -43,8 +47,3 @@ jobs:
               echo $(echo "$DATA" | jq -r '.errors[].message')
           fi
           
-
-          
-
-      - name: Install jq
-        run: sudo apt install -y jq
